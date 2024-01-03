@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./global.css"
 import { QueryProvider } from "../wrappers/providers/QueryProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Navbar } from "../components/auth/NavBar";
 
 export const metadata: Metadata = {
   title: "Secure back-end",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <QueryProvider>
       <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_API_GOOGLE_ID as  string}>
       <html lang="en">
-        <body>{children}</body>
+        <body>
+          <Navbar/>
+          {children}</body>
       </html>
       </GoogleOAuthProvider>
     </QueryProvider>

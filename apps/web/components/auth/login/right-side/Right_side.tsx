@@ -1,37 +1,37 @@
 "use client";
 
-import { GoogleForm } from "../GoogleForm";
+import { GoogleForm } from "../../register/GoogleForm";
 import { InputLabel } from "../../../../views/auth/InputLabel";
 import { FormEventHandler, useState } from "react";
 import { ToLogin } from "../../ToLogin";
 import Link from "next/link";
-import { useUserRegisterMutation } from "../../../../services/auth/auth";
+import { useUserLoginMutation } from "../../../../services/auth/auth";
 import { useRouter } from "next/navigation";
-import { userData } from "../../login/right-side/Right_side";
 import { MandatoryFields } from "../../../MandatoryFields";
 
+export type userData = {
+  username?: string;
+  email?: string;
+  password?: string;
+  password_confirmation?: string;
+  code?: string
+  verifyCode?: string
+};
 
 export const Right_side = () => {
-  const router = useRouter();
-  const [goodPass, setGoodPass] = useState(true);
+  const mutation = useUserLoginMutation();
   const [isAllEmpty, setIsAllEmpty] = useState(false);
-  const mutation = useUserRegisterMutation();
+  const router = useRouter();
   if (mutation.isSuccess) router.push("/");
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     const target = e.currentTarget;
     const formData = new FormData(target);
-    if (formData.get("password") !=  formData.get("password_confirmation")) {
-        setGoodPass(false);
-        return;
-    }
     const userData: userData = {
-      username: formData.get("username") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
-      password_confirmation: formData.get("password_confirmation") as string,
     };
-    if (userData.username == "" || userData.email == "" || userData.password == "" || userData.password_confirmation == "") {
+    if (userData.email == "" || userData.password == "") {
       setIsAllEmpty(true);
       return;
     } else {
@@ -39,6 +39,7 @@ export const Right_side = () => {
     }
     mutation.mutate(userData);
   };
+  
   return (
     <>
       <div className="flex space-x-8 cursor-pointer">
@@ -64,12 +65,6 @@ export const Right_side = () => {
         <div className="w-[15%] md:w-[33%] h-[2px] bg-gray-300"></div>
       </div>
       <form onSubmit={handleSubmit}>
-        <InputLabel
-          label={"Nom d'utilisateur"}
-          name={"username"}
-          type={"text"}
-          placeholder={"Entrez votre nom d'utilisateur"}
-        />
         <div className="mt-6"></div>
         <InputLabel
           label={"E-mail"}
@@ -82,22 +77,14 @@ export const Right_side = () => {
           label={"Mot de passe"}
           name={"password"}
           type={"password"}
-          placeholder={"Entrez un mot de passe"}
-        />
-        <div className="mt-6"></div>
-        <InputLabel
-          goodPass={goodPass}
-          label={"Confirmation mot de passe"}
-          name={"password_confirmation"}
-          type={"password"}
-          placeholder={"Répétez le mot de passe"}
+          placeholder={"Entrez votre mot de passe"}
         />
         <ToLogin />
       </form>
       <MandatoryFields empty={isAllEmpty} />
       <button className="p-3 mt-8 border-2 border-gray-200 rounded-lg flex justify-center items-center">
-        <Link href={"/signin"} className="text-semibold text-md lg:text-lg">
-          Avez-vous déjà un compte ? Connectez-vous
+        <Link href={"/signup"} className="text-semibold text-md lg:text-lg">
+          Vous n'avez pas encore de compte ? Créez un compte
         </Link>
       </button>
     </>
